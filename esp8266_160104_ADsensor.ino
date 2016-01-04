@@ -8,24 +8,24 @@ extern "C" {
 
 /*
    Define your SSID and WiFi password at [wifiConfig.h] using [TemplateWifiConfig.h]
-
 */
 
 /*
- * v0.2 2016 Dec. 04
- *   - add AD input 
- * v0.1 2016 Dec. 04
- *    can echo back
- *    - add loop()
- *    - add setup()
- *    - add Serial_setup()
- *    - add WiFi_setup()
- *    - add wifiConfig.h
- */
+   v0.2 2016 Dec. 04
+     - add AD input
+   v0.1 2016 Dec. 04
+      can echo back
+      - add loop()
+      - add setup()
+      - add Serial_setup()
+      - add WiFi_setup()
+      - add wifiConfig.h
+*/
 
 static WiFiUDP wifiUdp;
 
 static char receivedBuffer[255];
+static const char *kReturnFormat = "AD,%d\n"; // e.g. "AD,1023\n"
 
 static void WiFi_setup()
 {
@@ -61,7 +61,7 @@ void setup() {
 static void handleUdpReceive(uint ADvalue)
 {
   char retBuf[20];
-  
+
   int rcvdSize = wifiUdp.parsePacket();
   if (rcvdSize == 0) {
     delay(100);
@@ -77,12 +77,8 @@ static void handleUdpReceive(uint ADvalue)
   receivedBuffer[len] = 0x00;
 
   wifiUdp.beginPacket( wifiUdp.remoteIP(), wifiUdp.remotePort() );
-#if 0
-  wifiUdp.write(receivedBuffer);
-#else
-  sprintf(retBuf, "AD=%d", ADvalue);
+  sprintf(retBuf, kReturnFormat, ADvalue);
   wifiUdp.write(retBuf);
-#endif
   wifiUdp.endPacket();
 }
 
